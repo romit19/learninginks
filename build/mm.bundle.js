@@ -23,27 +23,61 @@ angular.module('mm', ['ionic', 'mm.core', 'mm.core.course', 'mm.core.courses', '
         if (window.StatusBar) {
             StatusBar.styleDefault();
         }
-		       if(window.plugins && window.plugins.AdMob) {
-            var admob_key = device.platform == "Android" ? "ca-app-pub-3940256099942544/6300978111" : "ca-app-pub-3940256099942544/6300978111";
-            var admob = window.plugins.AdMob;
-            admob.createBannerView( 
-                {
-                    'publisherId': admob_key,
-                    'adSize': admob.AD_SIZE.BANNER,
-                    'bannerAtTop': false
-                }, 
-                function() {
-                    admob.requestAd(
-                        { 'isTesting': false }, 
-                        function() {
-                            admob.showAd(true);
-                        }, 
-                        function() { console.log('failed to request ad'); }
-                    );
-                }, 
-                function() { console.log('failed to create banner view'); }
-            );
+		    var app = {
+    // global vars
+    autoShowInterstitial: true,
+    progressDialog: document.getElementById("progressDialog"),
+    spinner: document.getElementById("spinner"),
+    weinre: {
+        enabled: false,
+        ip: '', // ex. http://192.168.1.13
+        port: '', // ex. 9090
+        targetApp: '' // ex. see weinre docs
+    },
+
+    // Application Constructor
+    initialize: function () {
+        if ((/(ipad|iphone|ipod|android)/i.test(navigator.userAgent))) {
+            document.addEventListener('deviceready', this.onDeviceReady, true);
+        } else {
+            app.onDeviceReady();
         }
+    },
+    // Must be called when deviceready is fired so AdMobAds plugin will be ready
+    initAds: function () {
+        var isAndroid = (/(android)/i.test(navigator.userAgent));
+        var adPublisherIds = {
+            ios: {
+                banner: 'ca-app-pub-9863325511078756/5232547029',
+                interstitial: 'ca-app-pub-9863325511078756/6709280228'
+            },
+            android: {
+                banner: 'ca-app-pub-3940256099942544/6300978111',
+                interstitial: '	ca-app-pub-3940256099942544/1033173712'
+            }
+        };
+        var admobid;
+
+        if (isAndroid) {
+            admobid = adPublisherIds.android;
+        } else {
+            admobid = adPublisherIds.ios;
+        }
+        if (window.admob) {
+            admob.setOptions({
+                publisherId: admobid.banner,
+                interstitialAdId: admobid.interstitial,
+                bannerAtTop: true, // set to true, to put banner at top
+                overlap: false, // set to true, to allow banner overlap webview
+                offsetStatusBar: true, // set to true to avoid ios7 status bar overlap
+                isTesting: true, // receiving test ads (do not test with real ads as your account will be banned)
+                autoShowBanner: true, // auto show banners ad when loaded
+                autoShowInterstitial: true // auto show interstitials ad when loaded
+            });
+        } else {
+            alert('cordova-admob plugin not ready.\nAre you in a desktop browser? It won\'t work...');
+        }
+    },
     });
 }]);
 angular.module('mm.core', ['pascalprecht.translate'])
