@@ -24,7 +24,7 @@ angular.module('mm', ['ionic', 'mm.core', 'mm.core.course', 'mm.core.courses', '
             StatusBar.styleDefault();
         }
 		       if(window.plugins && window.plugins.AdMob) {
-            var admob_key = device.platform == "Android" ? "ca-app-pub-3940256099942544/6300978111" : "ca-app-pub-7957971173858308/3666912163";
+            var admob_key = device.platform == "Android" ? "ca-app-pub-3940256099942544/6300978111" : "ca-app-pub-3940256099942544/6300978111";
             var admob = window.plugins.AdMob;
             admob.createBannerView( 
                 {
